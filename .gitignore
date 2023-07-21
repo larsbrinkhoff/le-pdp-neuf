@@ -1,3 +1,4 @@
 *~
 *.o
-pdp9
+/pdp9
+/dump.vcd
