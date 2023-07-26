@@ -25,8 +25,10 @@ static void ma_jam_digit(void)
 
 void sync_clk(void)
 {
-  core[0100] = 0340123;
-  core[0101] = 0600100;
+  core[0000] = 0000000;
+  core[0100] = 0200000;
+  core[0101] = 0340123;
+  core[0102] = 0600101;
   core[0123] = 0777001;
 
   ma_jam_digit();

@@ -1,6 +1,7 @@
 /* Central processor. */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "defs.h"
 
 #define IR0 (IR & 020)
@@ -17,7 +18,7 @@
 word_t IR;
 word_t MB;
 word_t AR;
-word_t AC = 0777;
+word_t AC;
 word_t MQ;
 word_t PC;
 unsigned LINK;
@@ -97,6 +98,14 @@ static int power = 0;
 
 void power_on(void)
 {
+  VCD(IR, IR = rand() & 017);
+  VCD(MB, MB = rand() & 0777777);
+  VCD(AC, AC = rand() & 0777777);
+  VCD(AR, AR = rand() & 0777777);
+          MQ = rand() & 0777777;
+  VCD(MA, MA = rand() & 0017777);
+  VCD(PC, PC = rand() & 0017777);
+  power = 0;
   pwr_clr_pos();
   power = 1;
 }
@@ -336,7 +345,7 @@ static void cm_strobe_a(void)
   if (ff_IRI) {
     LOT = (SA >> 15) == 7;
     VCD(IR, IR = SA >> 13);
-    PV = 1;
+    //PV = ...;
     ISZ = IR0 && !IR1 && !IR2 && IR3;
   }
   if (ff_IRI)

@@ -82,6 +82,7 @@ static void timing_chain(void)
   VCD(MEM_STROBE, memory_access); //510
   nanoseconds += 78;
   VCD(CLR, 0); //588
+  VCD(MBI, ff_MBI = 0);
   nanoseconds += 12;
   VCD(MEM_STROBE, 0); //600
 
@@ -123,6 +124,7 @@ int main(int argc, char **argv)
   vcd_ACI = vcd_variable("ACI", "reg", 1);
   vcd_ACO = vcd_variable("ACO", "reg", 1);
   vcd_ARI = vcd_variable("ARI", "reg", 1);
+  vcd_ARO = vcd_variable("ARO", "reg", 1);
   vcd_PCI = vcd_variable("PCI", "reg", 1);
   vcd_PCO = vcd_variable("PCO", "reg", 1);
   vcd_SAO = vcd_variable("SAO", "reg", 1);
