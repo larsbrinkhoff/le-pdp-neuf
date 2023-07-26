@@ -50,8 +50,9 @@ extern unsigned sig_KRI, sig_KIO, sig_KCT, sig_KSP, sig_KST;
 extern unsigned sig_KDP, sig_KEX, sig_KDN, sig_KEN;
 extern unsigned sig_SW_SGL_INST, sig_SW_SGL_STP;
 extern word_t MB, AC, AR, PC, MQ, IR, MA, ADDR_SW, DATA_SW;
-extern unsigned ff_RUN;
+extern unsigned ff_RUN, ff_SAO;
 extern cm_t sig_CMSL, ff_CMA, ff_SM, ff_CONT, ff_DONE;
+extern cm_t ff_IRI, ff_MBI, ff_ACI, ff_ARI, PCI;
 extern word_t MA, SA;
 
 #ifdef DEBUG_VCD
@@ -69,7 +70,9 @@ extern word_t MA, SA;
 #ifdef DEBUG_VCD
 extern int vcd_CLK, vcd_CM_STROBE, vcd_CLR, vcd_MEM_STROBE, vcd_SA, vcd_MA;
 extern int vcd_IR, vcd_MB, vcd_AC, vcd_AR, vcd_PC, vcd_RUN;
-extern int vcd_CMA, vcd_SM, vcd_CONT, vcd_REP;
+extern int vcd_CMA, vcd_SM, vcd_CONT, vcd_REP, vcd_SAO;
+extern int vcd_IRI, vcd_MBI, vcd_ACI, vcd_ARI, vcd_PCI;
+extern int vcd_MBO, vcd_ACO, vcd_ARO, vcd_PCO;
 #endif
 
 extern void panel(void);

@@ -43,7 +43,9 @@ Nanoseconds     Event                   Fetch   Defer   Execute/IA0
 #ifdef DEBUG_VCD
 int vcd_CLK, vcd_CM_STROBE, vcd_CLR, vcd_MEM_STROBE, vcd_SA, vcd_MA;
 int vcd_IR, vcd_MB, vcd_AC, vcd_AR, vcd_PC, vcd_RUN;
-int vcd_CMA, vcd_SM, vcd_CONT, vcd_REP;
+int vcd_CMA, vcd_SM, vcd_CONT, vcd_REP, vcd_SAO;
+int vcd_IRI, vcd_MBI, vcd_ACI, vcd_ARI, vcd_PCI;
+int vcd_MBO, vcd_ACO, vcd_ARO, vcd_PCO;
 #endif
 
 static void timing_chain(void)
@@ -115,6 +117,15 @@ int main(int argc, char **argv)
   vcd_SM = vcd_variable("SM", "reg", 1);
   vcd_CONT = vcd_variable("CONT", "reg", 1);
   vcd_CMA = vcd_variable("CMA", "reg", 6);
+  vcd_IRI = vcd_variable("IRI", "reg", 1);
+  vcd_MBI = vcd_variable("MBI", "reg", 1);
+  vcd_MBO = vcd_variable("MBO", "reg", 1);
+  vcd_ACI = vcd_variable("ACI", "reg", 1);
+  vcd_ACO = vcd_variable("ACO", "reg", 1);
+  vcd_ARI = vcd_variable("ARI", "reg", 1);
+  vcd_PCI = vcd_variable("PCI", "reg", 1);
+  vcd_PCO = vcd_variable("PCO", "reg", 1);
+  vcd_SAO = vcd_variable("SAO", "reg", 1);
   vcd_REP = vcd_variable("REP", "reg", 1);
   vcd_start("dump.vcd", "PDP-9 simulator", "1ns");
 #endif

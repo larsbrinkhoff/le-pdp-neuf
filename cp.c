@@ -149,14 +149,14 @@ void clr(void)
 {
   VCD(CLR, 1);
 
-  ff_MBO = 0;
+  VCD(MBO, ff_MBO = 0);
   ff_PLUS1 = 0;
-  ff_PCI = 0;
-  ff_ACO = 0;
-  ff_ACI = 0;
-  ff_SAO = 1;
-  ff_MBI = 1;
-  
+  VCD(PCI, ff_PCI = 0);
+  VCD(ACO, ff_ACO = 0);
+  VCD(ACI, ff_ACI = 0);
+  VCD(SAO, ff_SAO = 1);
+  VCD(MBI, ff_MBI = 1);
+
   sig_A_BUS = 0;
   sig_B_BUS = 0;
   if (ff_SAO)
@@ -184,10 +184,10 @@ static void cm_clk(void)
   cm_strobe_d();
 
   if (sig_CJIT_CAL_V_JMS)
-    ff_PCI = 1;
+    VCD(PCI, ff_PCI = 1);
   sig_deltaMB = ff_PCO || ff_ARO || ff_CAL || ff_EXT || PV;
   if (sig_deltaMB && ff_SM && ff_RUN)
-    ff_MBI = 1;
+    VCD(MBI, ff_MBI = 1);
 
   sig_A_BUS = 0;
   if (ff_ADSO)
@@ -332,7 +332,7 @@ static void cm_strobe_a(void)
   ff_DCH = sig_CMSL & CM_DCH;
   if (ff_EAE || ff_LI)
     ff_LI = sig_CMSL & CM_LI;
-  ff_IRI = sig_CMSL & CM_IRI;
+  VCD(IRI, ff_IRI = sig_CMSL & CM_IRI);
   if (ff_IRI) {
     LOT = (SA >> 15) == 7;
     VCD(IR, IR = SA >> 13);
@@ -360,10 +360,10 @@ static void cm_strobe_a(void)
 
 static void cm_strobe_b(void)
 {
-  ff_PCO = sig_CMSL & CM_PCO;
+  VCD(PCO, ff_PCO = sig_CMSL & CM_PCO);
+  VCD(ACO, ff_ACO = sig_CMSL & CM_ACO);
+  VCD(ARO, ff_ARO = sig_CMSL & CM_ARO);
   ff_MQO = sig_CMSL & CM_MQO;
-  ff_ACO = sig_CMSL & CM_ACO;
-  ff_ARO = sig_CMSL & CM_ARO;
   //IO_BUS_ON =
 }
 
@@ -379,7 +379,7 @@ static void cm_strobe_c(void)
   sig_CJIT_CAL_V_JMS = ff_CJIT && !IR0 && !IR1 && !IR3;
   ff_ADSO = sig_CMSL & CM_ADSO;
 
-  ff_MBO = sig_CMSL & CM_MBO;
+  VCD(MBO, ff_MBO = sig_CMSL & CM_MBO);
   ff_SUB = sig_CMSL & CM_SUB;
 
   IOT = LOT && !IR3;
@@ -407,7 +407,7 @@ static void thirteen_to_cma(void)
 
 static void cm_strobe_d(void)
 {
-  ff_SAO = 0;
+  VCD(SAO, ff_SAO = 0);
   ff_SKPI = sig_CMSL & CM_SKPI;
   ff_DONE = sig_CMSL & CM_DONE;
   if (ff_DONE && (sig_KSP || sig_SW_SGL_INST))
@@ -417,10 +417,10 @@ static void cm_strobe_d(void)
 
   ff_PLUS1 = sig_CMSL & CM_PLUS1;
   sig_CI17 = !!ff_PLUS1;
-  ff_MBI = sig_CMSL & CM_MBI;
-  ff_ACI = sig_CMSL & CM_ACI;
-  ff_ARI = sig_CMSL & CM_ARI;
-  ff_PCI = sig_CMSL & CM_PCI;
+  VCD(MBI, ff_MBI = sig_CMSL & CM_MBI);
+  VCD(ACI, ff_ACI = sig_CMSL & CM_ACI);
+  VCD(ARI, ff_ARI = sig_CMSL & CM_ARI);
+  VCD(PCI, ff_PCI = sig_CMSL & CM_PCI);
   ff_MQI = sig_CMSL & CM_MQI;
 
   ff_EXT = sig_CMSL & CM_EXT;
@@ -430,5 +430,5 @@ static void cm_strobe_d(void)
 
 static void zero_to_mbi(void)
 {
-  ff_MBI = 0;
+  VCD(MBI, ff_MBI = 0);
 }
