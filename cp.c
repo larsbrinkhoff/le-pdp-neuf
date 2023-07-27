@@ -10,10 +10,10 @@
 #define IR3 (IR & 002)
 #define IR4 (IR & 001)
 
-#define MB07 (MB & 040)
-#define MB12 (MB & 040)
-#define MB13 (MB & 040)
-#define MB14 (MB & 040)
+#define MB07 (MB & 002000)
+#define MB12 (MB & 000040)
+#define MB13 (MB & 000020)
+#define MB14 (MB & 000010)
 
 #define CM_SUB    0400000000000ULL
 #define CM_EAE    0200000000000ULL
