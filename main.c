@@ -41,7 +41,8 @@ Nanoseconds     Event                   Fetch   Defer   Execute/IA0
  */
 
 #ifdef DEBUG_VCD
-int vcd_CLK, vcd_CM_STROBE, vcd_CLR, vcd_MEM_STROBE, vcd_SA, vcd_MA;
+int vcd_CLK, vcd_CM_STROBE, vcd_CLR;
+int vcd_MEM_STROBE, vcd_MEM_WRITE, vcd_SA, vcd_MA;
 int vcd_IR, vcd_MB, vcd_AC, vcd_AR, vcd_PC, vcd_RUN;
 int vcd_CMA, vcd_SM, vcd_CONT, vcd_REP, vcd_SAO;
 int vcd_IRI, vcd_MBI, vcd_ACI, vcd_ARI, vcd_PCI;
@@ -55,48 +56,57 @@ static void timing_chain(void)
   cp_clk();
 
   VCD(CLK, ff_RUN);
-  nanoseconds += 10;
+  nanoseconds += 10; //10
   VCD(CLK, 0);
 
   memory_access = ff_SM;
   if (memory_access)
     sync_clk();
 
-  nanoseconds += 90;
+  nanoseconds += 15; //25
+  VCD(MEM_WRITE, 0);
+
+  nanoseconds += 75; //100
   if (ff_RUN)
-    cm_clk_pos(); //100
-  nanoseconds += 10;
-  VCD(CM_STROBE, 0); //110
+    cm_clk_pos();
+  nanoseconds += 10; //110
+  VCD(CM_STROBE, 0);
 
-  nanoseconds += 202;
+  nanoseconds += 202; //312
   if (ff_RUN && ff_CONT)
-    cm_clk_pos(); //312
-  nanoseconds += 10;
-  VCD(CM_STROBE, 0); //322
+    cm_clk_pos();
+  nanoseconds += 10; //322
+  VCD(CM_STROBE, 0);
 
-  nanoseconds += 166;
+  nanoseconds += 166; //488
   if (memory_access)
-    clr(); //488
+    clr();
 
-  nanoseconds += 22;
-  VCD(MEM_STROBE, memory_access); //510
-  nanoseconds += 78;
-  VCD(CLR, 0); //588
+  nanoseconds += 22; //510
+  VCD(MEM_STROBE, memory_access);
+  nanoseconds += 78; //588
+  VCD(CLR, 0);
   VCD(MBI, ff_MBI = 0);
-  nanoseconds += 12;
-  VCD(MEM_STROBE, 0); //600
+  nanoseconds += 12; //600
+  VCD(MEM_STROBE, 0);
 
-  nanoseconds += 100;
+  nanoseconds += 100; //700
   if (ff_RUN && (ff_CONT || memory_access))
-    cm_clk_pos(); //700
-  nanoseconds += 10;
-  VCD(CM_STROBE, 0); //710
+    cm_clk_pos();
+  nanoseconds += 10; //710
+  VCD(CM_STROBE, 0);
 
-  nanoseconds += 190;
+  nanoseconds += 55; //765
+  if (memory_access) {
+    VCD(MEM_WRITE, 1);
+    mem_write();
+  }
+
+  nanoseconds += 135; //900
   if (ff_RUN && ff_CONT)
-    cm_clk_pos(); //900
-  nanoseconds += 10;
-  VCD(CM_STROBE, 0); //910
+    cm_clk_pos();
+  nanoseconds += 10; //910
+  VCD(CM_STROBE, 0);
   nanoseconds += 90;
 }
 
@@ -107,6 +117,7 @@ int main(int argc, char **argv)
   vcd_CM_STROBE = vcd_variable("CM_STROBE", "reg", 1);
   vcd_CLR = vcd_variable("CLR", "reg", 1);
   vcd_MEM_STROBE = vcd_variable("MEM_STROBE", "reg", 1);
+  vcd_MEM_WRITE = vcd_variable("MEM_WRITE", "reg", 1);
   vcd_SA = vcd_variable("SA", "reg", 18);
   vcd_MA = vcd_variable("MA", "reg", 13);
   vcd_IR = vcd_variable("IR", "reg", 5);
