@@ -1,3 +1,5 @@
+/* Control memory contents. */
+
 #include "defs.h"
 
 cm_t cm[] = {

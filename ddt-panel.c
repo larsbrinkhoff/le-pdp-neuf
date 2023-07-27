@@ -371,6 +371,29 @@ static char *line(void)
   }
 }
 
+/* Presently my soul grew stronger: hesitating then no longer
+I decided that I would respond to this strange program's call;
+TECO, which I then attended, to my soul more strength extended;
+With ^Z I ascended, going to my DDT --
+$$V I typed, and answered soon my DDT -- TECO there, and that was all! */
+
+static void teco(void)
+{
+  fprintf(output, "\r\n* TECO");
+}
+
+/* Again I went up to my HACTRN while cold shivers up my back ran
+$$V I typed, my jobs now once more to display.
+Only TECO was there listed; though my trembling heart resisted
+Yet I willed my hand, insisted, $J to quickly type --
+To answer this bold query DDT did hesitantly type
+A ghostly "FOOBAR$J" */
+
+static void foobar(void)
+{
+  fprintf(output, "\r\nFOOBAR$J");
+}
+
 static void load(void)
 {
   char *file;
@@ -674,7 +697,7 @@ static void(*altmode_table[])(void) = {
   go,                     //G
   error,                  //H
   error,                  //I
-  error,                  //J
+  foobar,                 //J
   error,                  //K
   load,                   //L
   error,                  //M
@@ -706,7 +729,7 @@ static void(*altmode_table[])(void) = {
   go,                     //g
   error,                  //h
   error,                  //i
-  error,                  //j
+  foobar,                 //j
   error,                  //k
   load,                   //L
   error,                  //m
@@ -817,7 +840,7 @@ static void(*double_altmode_table[])(void) = {
   error,                  //S
   error,                  //T
   logout,                 //U
-  error,                  //V
+  teco,                   //V
   error,                  //W
   error,                  //X
   dump,                   //Y
@@ -849,7 +872,7 @@ static void(*double_altmode_table[])(void) = {
   error,                  //s
   error,                  //t
   logout,                 //u
-  error,                  //v
+  teco,                   //v
   error,                  //w
   error,                  //x
   dump,                   //y
@@ -896,11 +919,19 @@ static void echo(char c)
   fflush(output);
 }
 
+static char upcase(char c)
+{
+  if (c >= 'a' && c <= 'z')
+    c &= ~040;
+  return c;
+}
+
 static void key(char c)
 {
   void(**before)(void) = dispatch;
-  if (c & -128)
+  if (c & ~0177)
     return;
+  c = upcase(c);
   echo(c);
   clear = 1;
   crlf = 1;
