@@ -257,8 +257,8 @@ static void cm_clk(void)
     MQ = sig_O_BUS;
   if (ff_LI)
     LINK = sig_ADRL;
-  printf("MB = %06o\nAC = %06o\nAR = %06o\nPC = %06o\n", MB, AC, AR, PC);
-  printf("IR = %02o\n", IR << 1);
+  //printf("MB = %06o\nAC = %06o\nAR = %06o\nPC = %06o\n", MB, AC, AR, PC);
+  //printf("IR = %02o\n", IR << 1);
 }
 
 static void pwr_clr_pos(void)
@@ -331,7 +331,7 @@ static void cm_current(void)
     address |= 2;
   if ((ff_TI && IR4) || (ff_KEY && R12B) || (ff_DONE && BK_SYNC) || ODD_ADDR)
     address |= 1;
-  printf("CMA/%02o\r\n", address);
+  //printf("CMA/%02o\r\n", address);
   VCD(CMA, address);
   sig_CMSL = cm[address];
 }

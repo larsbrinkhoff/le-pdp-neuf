@@ -1,7 +1,10 @@
 #include <signal.h>
+#include <unistd.h>
+#include <sys/time.h>
 #include "defs.h"
 
 long long nanoseconds;
+static struct timeval previous;
 
 /*
 Nanoseconds     Event                   Fetch   Defer   Execute/IA0
@@ -48,6 +51,18 @@ int vcd_CMA, vcd_SM, vcd_CONT, vcd_REP, vcd_SAO;
 int vcd_IRI, vcd_MBI, vcd_ACI, vcd_ARI, vcd_PCI;
 int vcd_MBO, vcd_ACO, vcd_ARO, vcd_PCO;
 #endif
+
+static void delay(int microseconds)
+{
+  struct timeval tv;
+  useconds_t x;
+  gettimeofday(&tv, NULL);
+  x = 1000000 * (tv.tv_sec - previous.tv_sec) + tv.tv_usec - previous.tv_usec;
+  printf("%d %d\n", (int)microseconds, (int)x);
+  if (x < microseconds)
+    usleep(microseconds - x);
+  gettimeofday(&previous, NULL);
+}
 
 static void timing_chain(void)
 {
@@ -112,6 +127,8 @@ static void timing_chain(void)
 
 int main(int argc, char **argv)
 {
+  int i;
+
 #ifdef DEBUG_VCD
   vcd_CLK = vcd_variable("CLK", "reg", 1);
   vcd_CM_STROBE = vcd_variable("CM_STROBE", "reg", 1);
@@ -147,7 +164,13 @@ int main(int argc, char **argv)
   signal(SIGINT, quit);
   signal(SIGQUIT, quit);
   nanoseconds = 0;
-  for (;;)
+  gettimeofday(&previous, NULL);
+  for (i = 0;; i++) {
+    if (i == 10000) {
+      delay(i);
+      i = 0;
+    }
     timing_chain();
+  }
   return 0;
 }

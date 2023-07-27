@@ -36,7 +36,7 @@ void sync_clk(void)
   ma_jam_word();
   VAR(MA);
   VCD(SA, SA = core[MA]);
-  printf("SA = %06o\n", SA);
+  //printf("SA = %06o\n", SA);
 }
 
 //mem strobe = read data
@@ -44,6 +44,6 @@ void sync_clk(void)
 
 void mem_write(void)
 {
-  printf("Core %05o := %06o\n", MA, MB);
+  //printf("Core %05o := %06o\n", MA, MB);
   core[MA] = MB;
 }
