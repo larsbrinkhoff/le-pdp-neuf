@@ -38,6 +38,8 @@ extern word_t MA, SA;
   X(RUN, 1) \
   X(SM, 1) \
   X(CONT, 1) \
+  X(KEY, 1) \
+  X(AXS, 1) \
   X(CMA, 6) \
   X(IRI, 1) \
   X(MBI, 1) \
@@ -55,7 +57,12 @@ extern word_t MA, SA;
   X(REP, 1) \
   X(ISZ, 1) \
   X(SKIP, 1) \
-  X(CI17, 1)
+  X(CI17, 1) \
+  X(KDP, 1) \
+  X(KDN, 1) \
+  X(KEX, 1) \
+  X(KEN, 1) \
+  X(KRI, 1)
 #else
 #define VCD(IDX, VAL) do { VAL; } while (0)
 #define VAR(FOO) do {} while (0)
@@ -72,7 +79,7 @@ extern void panel(void);
 extern void quit(int);
 extern void power_on(void);
 extern void power_off(void);
-extern void cp_clk(void);
+extern unsigned cp_clk(void);
 extern void cm_clk_pos(void);
 extern void clr(void);
 extern void sync_clk(void);

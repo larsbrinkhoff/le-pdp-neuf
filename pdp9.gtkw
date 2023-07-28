@@ -5,6 +5,11 @@
 *-10.000000 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [signals_width] 200
 @28
+KDP
+KDN
+KEX
+KEN
+KRI
 RUN
 CLK
 CM_STROBE
@@ -14,6 +19,8 @@ CMA[5:0]
 @28
 CONT
 SM
+KEY
+AXS
 REP
 MBI
 MBO

@@ -24,9 +24,9 @@ static void delay(int microseconds)
 
 static void timing_chain(void)
 {
-  unsigned memory_access;
+  unsigned memory_access, sig_key_init_pos;
 
-  cp_clk();
+  sig_key_init_pos = cp_clk();
 
   VCD(CLK, ff_RUN);
   nanoseconds += 10; //10

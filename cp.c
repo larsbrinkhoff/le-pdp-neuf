@@ -14,6 +14,7 @@
 #define MB12 (MB & 000040)
 #define MB13 (MB & 000020)
 #define MB14 (MB & 000010)
+#define MB15 (MB & 000004)
 
 #define CM_SUB    0400000000000ULL
 #define CM_EAE    0200000000000ULL
@@ -116,6 +117,7 @@ unsigned ff_AUT_INX, BK_SYNC, ff_BK, ODD_ADDR, sig_ADDR10;
 unsigned sig_KST, sig_KSP, sig_KCT, sig_KMT, sig_KIO, sig_KRI;
 unsigned sig_KDP, sig_KDN, sig_KEX, sig_KEN;
 unsigned sig_SW_SGL_INST, sig_SW_SGL_STP, sig_REPT;
+unsigned sig_KDPDN_RI, sig_KEY_KPDN;
 unsigned ff_UM;
 unsigned sig_NOSH, sig_SHL1, sig_SHL2, sig_SHR1, sig_SHR2;
 unsigned sig_deltaMB, ff_MEM_STROBE;
@@ -163,8 +165,10 @@ void power_off(void)
   VAR(PC);
 }
 
-void cp_clk(void)
+unsigned cp_clk(void)
 {
+  unsigned sig_key_init_pos = 0;
+
   static unsigned prev_KST = 0, prev_KCT = 0, prev_KEX;
   if (!power)
     return;
@@ -175,14 +179,24 @@ void cp_clk(void)
     KIOA3 = sig_KST || sig_KMT || sig_KIO;
     KIOA4 = sig_KST || sig_KMT || sig_KEN || sig_KDN;
     KIOA5 = sig_KMT || sig_KEX || sig_KDP || sig_KIO;
-    if (KIOA3 || KIOA4 || KIOA5)
+    if (KIOA3 || KIOA4 || KIOA5) {
       key_init_pos();
+      sig_key_init_pos = 1;
+    }
     VCD(RUN, ff_RUN = 1);
   }
+
+  SIG(KDP);
+  SIG(KDN);
+  SIG(KEX);
+  SIG(KEN);
+  SIG(KRI);
 
   prev_KST = sig_KST;
   prev_KCT = sig_KCT;
   prev_KEX = sig_KEX;
+
+  return sig_key_init_pos;
 }
 
 static void ADR(void)
@@ -204,7 +218,11 @@ void clr(void)
   VCD(PCI, ff_PCI = 0);
   VCD(ACO, ff_ACO = 0);
   VCD(ACI, ff_ACI = 0);
-  VCD(SAO, ff_SAO = 1);
+  sig_KEY_KPDN =
+    ((sig_KDP || sig_KDN) && ff_KEY) ||
+    (OP && MB15) ||
+    (ff_MBI || sig_KDPDN_RI);
+  VCD(SAO, ff_SAO = !sig_KEY_KPDN);
   VCD(MBI, ff_MBI = 1);
 
   sig_A_BUS = 0;
@@ -422,8 +440,8 @@ static void cm_strobe_a(void)
   VAR(REP);
 
   VCD(SM, ff_SM = sig_CMSL & CM_SM);
-  ff_AXS = sig_CMSL & CM_AXS;
-  ff_KEY = sig_CMSL & CM_KEY;
+  VCD(AXS, ff_AXS = sig_CMSL & CM_AXS);
+  VCD(KEY, ff_KEY = sig_CMSL & CM_KEY);
 }
 
 static void cm_strobe_b(void)
