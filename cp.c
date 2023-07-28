@@ -106,8 +106,9 @@ cm_t ff_PCI;
 cm_t ff_MQI;
 cm_t ff_EXT;
 
-unsigned C, SEN, ff_PCOS, ff_ACOS, PV, LOT, ISZ, ff_CAL, REP, IOT, OP;
+unsigned C, SEN, ff_PCOS, ff_ACOS, PV, LOT, sig_ISZ, ff_CAL, REP, IOT, OP;
 unsigned sig_CJIT_CAL_V_JMS, sig_CI17, sig_CO00;
+unsigned ff_SKIP;
 unsigned ff_SAO;
 unsigned KCT, KIOA3, KIOA4, KIOA5, ff_RUN;
 unsigned INC_V_DCH, API_BK_RQ_B, PROG_SY, R12B;
@@ -143,6 +144,7 @@ void power_on(void)
           MQ = rand() & 0777777;
   VCD(MA, MA = rand() & 0017777);
   VCD(PC, PC = rand() & 0017777);
+  sig_CMSL = 0;
   power = 0;
   pwr_clr_pos();
   power = 1;
@@ -163,28 +165,29 @@ void power_off(void)
 
 void cp_clk(void)
 {
-  static unsigned prev_KST = 0, prev_KCT = 0;
+  static unsigned prev_KST = 0, prev_KCT = 0, prev_KEX;
   if (!power)
     return;
 
-  if ((!prev_KST && sig_KST) || (!prev_KCT && sig_KCT)) {
+  if ((!prev_KST && sig_KST) ||
+      (!prev_KCT && sig_KCT) ||
+      (!prev_KEX && sig_KEX)) {
     KIOA3 = sig_KST || sig_KMT || sig_KIO;
     KIOA4 = sig_KST || sig_KMT || sig_KEN || sig_KDN;
     KIOA5 = sig_KMT || sig_KEX || sig_KDP || sig_KIO;
     if (KIOA3 || KIOA4 || KIOA5)
       key_init_pos();
-  }
-
-  if ((!prev_KST && sig_KST) || (!prev_KCT && sig_KCT))
     VCD(RUN, ff_RUN = 1);
+  }
 
   prev_KST = sig_KST;
   prev_KCT = sig_KCT;
+  prev_KEX = sig_KEX;
 }
 
 static void ADR(void)
 {
-  sig_ADR = sig_A_BUS + sig_B_BUS + sig_CI17;
+  sig_ADR = sig_A_BUS + sig_B_BUS + !!sig_CI17;
   sig_CO00 = sig_ADR >> 18;
   sig_ADR &= 0777777;
   if (sig_CMPL)
@@ -197,7 +200,7 @@ void clr(void)
   VCD(CLR, 1);
 
   VCD(MBO, ff_MBO = 0);
-  ff_PLUS1 = 0;
+  VCD(PLUS1, ff_PLUS1 = 0);
   VCD(PCI, ff_PCI = 0);
   VCD(ACO, ff_ACO = 0);
   VCD(ACI, ff_ACI = 0);
@@ -208,7 +211,11 @@ void clr(void)
   sig_B_BUS = 0;
   if (ff_SAO)
     sig_B_BUS = SA;
-  sig_CI17 = ff_AUT_INX;
+  sig_CI17 = ff_PLUS1 ||
+    (ff_PCO && ff_SKIP) ||
+    (ff_CJIT && sig_ISZ) ||
+    (ff_SAO && ff_AUT_INX);
+  VCD(CI17, sig_CI17);
   ADR();
   
   sig_O_BUS = sig_ADR;
@@ -232,6 +239,8 @@ static void cm_clk(void)
 
   if (sig_CJIT_CAL_V_JMS)
     VCD(PCI, ff_PCI = 1);
+  if (ff_PCI)
+    VCD(SKIP, ff_SKIP = 0);
   sig_deltaMB = ff_PCO || ff_ARO || ff_CAL || ff_EXT || PV;
   if (sig_deltaMB && ff_SM && ff_RUN)
     VCD(MBI, ff_MBI = 1);
@@ -291,6 +300,8 @@ static void cm_clk(void)
     VCD(AR, AR = sig_O_BUS);
   if (ff_PCI)
     VCD(PC, PC = sig_O_BUS & 017777);
+  if (ff_PCI)
+    VCD(SKIP, ff_SKIP = 0);
   if (ff_MQI)
     MQ = sig_O_BUS;
   if (ff_LI)
@@ -299,11 +310,20 @@ static void cm_clk(void)
   //printf("IR = %02o\n", IR << 1);
 }
 
+static void ind_clk(void)
+{
+  cm_strobe_b();
+}
+
 static void pwr_clr_pos(void)
 {
   C = 0;
   SEN = 0;
+  ind_clk();
   pk_clr();
+  cm_strobe_a();
+  cm_strobe_c();
+  cm_strobe_d();
   zero_to_cma();
 }
 
@@ -384,7 +404,7 @@ static void cm_strobe_a(void)
     LOT = (SA >> 15) == 7;
     VCD(IR, IR = SA >> 13);
     //PV = ...;
-    ISZ = IR0 && !IR1 && !IR2 && IR3;
+    VCD(ISZ, sig_ISZ = IR0 && !IR1 && !IR2 && IR3);
   }
   if (ff_IRI)
     ff_CAL = !IR0 && !IR1 && !IR2 && !IR3 && !ff_EXT;
@@ -423,7 +443,7 @@ static void cm_strobe_c(void)
   ff_EAE = sig_CMSL & CM_EAE;
   ff_CMA = (sig_CMSL & CM_CMA) >> 7;
 
-  ff_CJIT = sig_CMSL & CM_CJIT;
+  VCD(CJIT, ff_CJIT = sig_CMSL & CM_CJIT);
   sig_CJIT_CAL_V_JMS = ff_CJIT && !IR0 && !IR1 && !IR3;
   ff_ADSO = sig_CMSL & CM_ADSO;
 
@@ -456,19 +476,28 @@ static void thirteen_to_cma(void)
 static void cm_strobe_d(void)
 {
   VCD(SAO, ff_SAO = 0);
-  ff_SKPI = sig_CMSL & CM_SKPI;
+  VCD(SKPI, ff_SKPI = sig_CMSL & CM_SKPI);
+  if (ff_SKPI)
+    ff_SKIP = (sig_ISZ && sig_ADRis0); //More inputs!
+  FF(SKIP);
   ff_DONE = sig_CMSL & CM_DONE;
   if (ff_DONE && (sig_KSP || sig_SW_SGL_INST))
     VCD(RUN, ff_RUN = 0);
   VCD(CONT, ff_CONT = sig_CMSL & CM_CONT);
   ff_EAE_R = sig_CMSL & CM_EAE_R;
 
-  ff_PLUS1 = sig_CMSL & CM_PLUS1;
-  sig_CI17 = !!ff_PLUS1;
+  VCD(PLUS1, ff_PLUS1 = sig_CMSL & CM_PLUS1);
+  sig_CI17 = ff_PLUS1 ||
+    (ff_PCO && ff_SKIP) ||
+    (ff_CJIT && sig_ISZ) ||
+    (ff_SAO && ff_AUT_INX);
+  VCD(CI17, sig_CI17);
   VCD(MBI, ff_MBI = sig_CMSL & CM_MBI);
   VCD(ACI, ff_ACI = sig_CMSL & CM_ACI);
   VCD(ARI, ff_ARI = sig_CMSL & CM_ARI);
   VCD(PCI, ff_PCI = sig_CMSL & CM_PCI);
+  if (ff_PCI)
+    VCD(SKIP, ff_SKIP = 0);
   ff_MQI = sig_CMSL & CM_MQI;
 
   ff_EXT = sig_CMSL & CM_EXT;

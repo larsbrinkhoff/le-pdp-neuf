@@ -11,10 +11,9 @@ extern cm_t cm[];
 extern unsigned sig_KRI, sig_KIO, sig_KCT, sig_KSP, sig_KST;
 extern unsigned sig_KDP, sig_KEX, sig_KDN, sig_KEN;
 extern unsigned sig_SW_SGL_INST, sig_SW_SGL_STP;
-extern word_t MB, AC, AR, PC, MQ, IR, MA, ADDR_SW, DATA_SW;
-extern unsigned ff_RUN, ff_SAO;
-extern cm_t sig_CMSL, ff_CMA, ff_SM, ff_CONT, ff_DONE;
-extern cm_t ff_IRI, ff_MBI, ff_ACI, ff_ARI, PCI;
+extern word_t MB, AC, AR, PC, MQ, IR, ADDR_SW, DATA_SW;
+extern unsigned ff_RUN;
+extern cm_t ff_SM, ff_CONT, ff_MBI;
 extern word_t MA, SA;
 
 #ifdef DEBUG_VCD
@@ -49,8 +48,14 @@ extern word_t MA, SA;
   X(ARO, 1) \
   X(PCI, 1) \
   X(PCO, 1) \
+  X(CJIT, 1) \
+  X(PLUS1, 1) \
+  X(SKPI, 1) \
   X(SAO, 1) \
-  X(REP, 1)
+  X(REP, 1) \
+  X(ISZ, 1) \
+  X(SKIP, 1) \
+  X(CI17, 1)
 #else
 #define VCD(IDX, VAL) do { VAL; } while (0)
 #define VAR(FOO) do {} while (0)

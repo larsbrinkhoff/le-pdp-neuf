@@ -87,16 +87,12 @@ static void clear_breakpoints(void)
 
 static void number(void)
 {
-  if (ch >= '0' && ch <= '9')
+  if (ch >= '0' && ch <= '7')
     ch -= '0';
-  else if (ch >= 'A' && ch <= 'F')
-    ch += -'A' + 10;
-  else
-    ch += -'a' + 10;
   if (*accumulator == -1)
     *accumulator = ch;
   else
-    *accumulator = 16 * *accumulator + ch;
+    *accumulator = 8 * *accumulator + ch;
   clear = 0;
 }
 

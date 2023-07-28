@@ -28,15 +28,17 @@ void sync_clk(void)
   static int first = 1;
   if (first) {
     core[0000] = 0777777;
-    core[0100] = 0140000; //DMZ 0
+    core[0100] = 0400202; //XCT 202
     core[0101] = 0200000; //LAC 0
-    core[0102] = 0340200; //TAD 200
+    core[0102] = 0440201; //ISZ 201
     core[0103] = 0100170; //JMS 170
-    core[0104] = 0340200; //TAD 0
+    core[0104] = 0340200; //TAD 200
     core[0105] = 0600102; //JMP 102
     core[0170] = 0000000;
     core[0171] = 0620170; //JMP I 170
     core[0200] = 0777001;
+    core[0201] = 0777776;
+    core[0202] = 0140000; //DMZ 0
     first = 0;
   }
 
