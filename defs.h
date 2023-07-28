@@ -13,7 +13,7 @@ extern unsigned sig_KDP, sig_KEX, sig_KDN, sig_KEN;
 extern unsigned sig_SW_SGL_INST, sig_SW_SGL_STP;
 extern word_t MB, AC, AR, PC, MQ, IR, ADDR_SW, DATA_SW;
 extern unsigned ff_RUN;
-extern cm_t ff_SM, ff_CONT, ff_MBI;
+extern cm_t sig_CMSL, ff_CMA, ff_SM, ff_CONT, ff_MBI;
 extern word_t MA, SA;
 
 #ifdef DEBUG_VCD
