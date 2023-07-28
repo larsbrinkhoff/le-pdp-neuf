@@ -36,11 +36,14 @@ static void timing_chain(void)
   if (memory_access)
     sync_clk();
 
+  if (sig_KIOA5)
+    VCD(RUN, ff_RUN = 0);
+
   nanoseconds += 15; //25
   VCD(MEM_WRITE, 0);
 
   nanoseconds += 75; //100
-  if (sig_key_init_pos || ff_RUN)
+  if (sig_key_init_pos || ff_RUN || memory_access)
     cm_clk_pos();
   nanoseconds += 10; //110
   VCD(CM_STROBE, 0);
@@ -85,7 +88,7 @@ static void timing_chain(void)
   VCD(CM_STROBE, 0);
 
   nanoseconds += 40; //950
-  if (sig_KST || sig_KCT)
+  if (sig_key_init_pos)
     VCD(RUN, ff_RUN = 1);
   nanoseconds += 50;
 }
