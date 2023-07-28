@@ -183,7 +183,8 @@ unsigned cp_clk(void)
       (!prev_KDN && sig_KDN)) {
     VCD(KIOA3, sig_KIOA3 = sig_KST || sig_KMT || sig_KIO);
     VCD(KIOA4, sig_KIOA4 = sig_KST || sig_KMT || sig_KEN || sig_KDN);
-    VCD(KIOA5, sig_KIOA5 = sig_KMT || sig_KEX || sig_KDP || sig_KIO);
+    VCD(KIOA5, sig_KIOA5 = sig_KMT || sig_KEN || sig_KDN ||
+        sig_KEX || sig_KDP || sig_KIO);
     if (sig_KIOA3 || sig_KIOA4 || sig_KIOA5) {
       key_init_pos();
       sig_key_init_pos = 1;

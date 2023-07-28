@@ -24,7 +24,7 @@ static int *accumulator = &prefix;
 static word_t dot = 0;
 static void (**dispatch)(void) = normal_table;
 static void (*typeout)(word_t data);
-static int radix = 16;
+static int radix = 8;
 static int crlf;
 static int clear;
 static char ch;
@@ -941,7 +941,7 @@ void ddt(void)
   cbreak();
   trace = 0;
   typeout = symbolic;
-  radix = 16;
+  radix = 8;
   prefix = infix = -1;
   clear_breakpoints();
   pthread_create(&th, NULL, thread, NULL);
