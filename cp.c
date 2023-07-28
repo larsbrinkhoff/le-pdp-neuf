@@ -111,7 +111,7 @@ unsigned C, SEN, ff_PCOS, ff_ACOS, PV, LOT, sig_ISZ, ff_CAL, REP, IOT, OP;
 unsigned sig_CJIT_CAL_V_JMS, sig_CI17, sig_CO00;
 unsigned ff_SKIP;
 unsigned ff_SAO;
-unsigned sig_KIOA3, sig_KIOA4, sig_KIOA5, ff_RUN;
+unsigned sig_KIOA3, sig_KIOA4, sig_KIOA5, sig_DASO, ff_RUN;
 unsigned INC_V_DCH, API_BK_RQ_B, PROG_SY, R12B;
 unsigned ff_AUT_INX, BK_SYNC, ff_BK, ODD_ADDR, sig_ADDR10;
 unsigned sig_KST, sig_KSP, sig_KCT, sig_KMT, sig_KIO, sig_KRI;
@@ -168,14 +168,19 @@ void power_off(void)
 unsigned cp_clk(void)
 {
   unsigned sig_key_init_pos = 0;
-  static unsigned prev_KST = 0, prev_KCT = 0, prev_KEX;
+  static unsigned prev_KST = 0, prev_KCT = 0;
+  static unsigned prev_KEX = 0, prev_KEN = 0;
+  static unsigned prev_KDP = 0, prev_KDN = 0;
 
   if (!power)
     return 0;
 
   if ((!prev_KST && sig_KST) ||
       (!prev_KCT && sig_KCT) ||
-      (!prev_KEX && sig_KEX)) {
+      (!prev_KEX && sig_KEX) ||
+      (!prev_KEN && sig_KEN) ||
+      (!prev_KDP && sig_KDP) ||
+      (!prev_KDN && sig_KDN)) {
     VCD(KIOA3, sig_KIOA3 = sig_KST || sig_KMT || sig_KIO);
     VCD(KIOA4, sig_KIOA4 = sig_KST || sig_KMT || sig_KEN || sig_KDN);
     VCD(KIOA5, sig_KIOA5 = sig_KMT || sig_KEX || sig_KDP || sig_KIO);
@@ -194,6 +199,9 @@ unsigned cp_clk(void)
   prev_KST = sig_KST;
   prev_KCT = sig_KCT;
   prev_KEX = sig_KEX;
+  prev_KEN = sig_KEN;
+  prev_KDP = sig_KDP;
+  prev_KDN = sig_KDN;
 
   return sig_key_init_pos;
 }
@@ -220,7 +228,8 @@ void clr(void)
   sig_KEY_KPDN =
     ((sig_KDP || sig_KDN) && ff_KEY) ||
     (OP && MB15) ||
-    (ff_MBI || sig_KDPDN_RI);
+    (ff_MBI && sig_KDPDN_RI);
+  sig_DASO = sig_KEY_KPDN;
   VCD(SAO, ff_SAO = !sig_KEY_KPDN);
   VCD(MBI, ff_MBI = 1);
 
@@ -236,6 +245,8 @@ void clr(void)
   ADR();
   
   sig_O_BUS = sig_ADR;
+  if (sig_DASO)
+    sig_O_BUS |= DATA_SW;
   if (ff_MBI)
     VCD(MB, MB = sig_O_BUS);
 }
