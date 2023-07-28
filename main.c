@@ -40,13 +40,13 @@ static void timing_chain(void)
   VCD(MEM_WRITE, 0);
 
   nanoseconds += 75; //100
-  if (ff_RUN)
+  if (sig_key_init_pos || ff_RUN)
     cm_clk_pos();
   nanoseconds += 10; //110
   VCD(CM_STROBE, 0);
 
   nanoseconds += 202; //312
-  if (ff_RUN && ff_CONT)
+  if (ff_CONT)
     cm_clk_pos();
   nanoseconds += 10; //322
   VCD(CM_STROBE, 0);
@@ -64,7 +64,7 @@ static void timing_chain(void)
   VCD(MEM_STROBE, 0);
 
   nanoseconds += 100; //700
-  if (ff_RUN && (ff_CONT || memory_access))
+  if (ff_CONT || memory_access)
     cm_clk_pos();
   nanoseconds += 10; //710
   VCD(CM_STROBE, 0);
@@ -76,11 +76,15 @@ static void timing_chain(void)
   }
 
   nanoseconds += 135; //900
-  if (ff_RUN && ff_CONT)
+  if (ff_CONT)
     cm_clk_pos();
   nanoseconds += 10; //910
   VCD(CM_STROBE, 0);
-  nanoseconds += 90;
+  nanoseconds += 40; //950
+
+  if (sig_key_init_pos)
+    VCD(RUN, ff_RUN = 1);
+  nanoseconds += 50;
 }
 
 int main(int argc, char **argv)

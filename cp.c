@@ -183,7 +183,7 @@ unsigned cp_clk(void)
       key_init_pos();
       sig_key_init_pos = 1;
     }
-    VCD(RUN, ff_RUN = 1);
+    //VCD(RUN, ff_RUN = 1);
   }
 
   SIG(KDP);
