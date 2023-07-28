@@ -32,7 +32,7 @@ static void timing_chain(void)
   nanoseconds += 10; //10
   VCD(CLK, 0);
 
-  memory_access = ff_SM;
+  memory_access = ff_SM && ff_RUN;
   if (memory_access)
     sync_clk();
 
@@ -44,6 +44,9 @@ static void timing_chain(void)
     cm_clk_pos();
   nanoseconds += 10; //110
   VCD(CM_STROBE, 0);
+
+  if (!ff_RUN)
+    ff_CONT = 0;
 
   nanoseconds += 202; //312
   if (ff_CONT)
@@ -80,9 +83,9 @@ static void timing_chain(void)
     cm_clk_pos();
   nanoseconds += 10; //910
   VCD(CM_STROBE, 0);
-  nanoseconds += 40; //950
 
-  if (sig_key_init_pos)
+  nanoseconds += 40; //950
+  if (sig_KST || sig_KCT)
     VCD(RUN, ff_RUN = 1);
   nanoseconds += 50;
 }

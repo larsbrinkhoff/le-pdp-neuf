@@ -168,8 +168,8 @@ void power_off(void)
 unsigned cp_clk(void)
 {
   unsigned sig_key_init_pos = 0;
-
   static unsigned prev_KST = 0, prev_KCT = 0, prev_KEX;
+
   if (!power)
     return;
 
@@ -183,7 +183,6 @@ unsigned cp_clk(void)
       key_init_pos();
       sig_key_init_pos = 1;
     }
-    //VCD(RUN, ff_RUN = 1);
   }
 
   SIG(KDP);

@@ -293,24 +293,6 @@ static void proceed(void)
   fprintf(output, "\r\n");
   fflush(output);
   push(&sig_KCT);
-
-#if 0 //XXX
-  for (n = 1;; n++) {
-    step();
-    for (i = 0; i < NBKPT+1; i++) {
-      if (pc == breakpoints[i]) {
-        if (i > 0)
-          fprintf(output, "$%dB; ", i);
-        stopped(">>");
-        return;
-      }
-    }
-    if (control_z()) {
-      stopped(")   ");
-      return;
-    }
-  }
-#endif
 }
 
 static void go(void)
