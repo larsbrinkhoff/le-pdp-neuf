@@ -225,20 +225,15 @@ static void frob(void)
       lights[2] |= B18_LIGHT_AC2;
   }
 
-  if (on & B18_SW_Start) {
+  if (on & (B18_SW_Start | B18_SW_Examine | B18_SW_Deposit))
     ADDR_SW = switches[0];
-  }
-
-  if (on & B18_SW_Examine) {
-    ADDR_SW = switches[0];
-  }
 
   if (lights[2] & B18_LIGHT_AC)
     lights[0] = AC;
   if (lights[2] & B18_LIGHT_MA)
     lights[0] = MA;
   if (lights[2] & B18_LIGHT_Flags)
-    lights[0] = 0;
+    lights[0] = AR;
   if (lights[2] & B18_LIGHT_TAC)
     lights[0] = ADDR_SW;
   if (lights[2] & B18_LIGHT_AC2)
