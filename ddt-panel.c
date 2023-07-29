@@ -160,14 +160,14 @@ static void constant(word_t data)
 
 static void deposit(word_t addr, word_t data)
 {
-  ADDR_SW = dot = addr;
+  ADDR_SW = dot = addr & 017777;
   DATA_SW = data;
   push(&sig_KDP);
 }
 
 static word_t examine(word_t addr)
 {
-  ADDR_SW = dot = addr;
+  ADDR_SW = dot = addr & 017777;
   push(&sig_KEX);
   usleep(10000);
   return MB;
@@ -191,10 +191,11 @@ static void carriagereturn(void)
 static void slash(void)
 {
   if (prefix != -1)
-    dot = prefix;
+    dot = prefix & 017777;
+  else if (q != -1)
+    dot = q & 017777;
   fprintf(output, "   ");
   typeout(examine(dot));
-  fprintf(output, "   ");
   crlf = 0;
 }
 
