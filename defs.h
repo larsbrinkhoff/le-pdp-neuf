@@ -59,6 +59,9 @@ extern word_t MA, SA;
   X(ISZ, 1) \
   X(SKIP, 1) \
   X(CI17, 1) \
+  X(KST, 1) \
+  X(KSP, 1) \
+  X(KCT, 1) \
   X(KDP, 1) \
   X(KDN, 1) \
   X(KEX, 1) \

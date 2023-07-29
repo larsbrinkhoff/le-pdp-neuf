@@ -175,22 +175,29 @@ unsigned cp_clk(void)
   if (!power)
     return 0;
 
+  VCD(KIOA3, sig_KIOA3 = sig_KST || sig_KMT || sig_KIO);
+  VCD(KIOA4, sig_KIOA4 = sig_KST || sig_KMT || sig_KEN || sig_KDN);
+  VCD(KIOA5, sig_KIOA5 = sig_KMT || sig_KEN || sig_KDN ||
+      sig_KEX || sig_KDP || sig_KIO);
+
   if ((!prev_KST && sig_KST) ||
-      (!prev_KCT && sig_KCT) ||
       (!prev_KEX && sig_KEX) ||
       (!prev_KEN && sig_KEN) ||
       (!prev_KDP && sig_KDP) ||
       (!prev_KDN && sig_KDN)) {
-    VCD(KIOA3, sig_KIOA3 = sig_KST || sig_KMT || sig_KIO);
-    VCD(KIOA4, sig_KIOA4 = sig_KST || sig_KMT || sig_KEN || sig_KDN);
-    VCD(KIOA5, sig_KIOA5 = sig_KMT || sig_KEN || sig_KDN ||
-        sig_KEX || sig_KDP || sig_KIO);
     if (sig_KIOA3 || sig_KIOA4 || sig_KIOA5) {
       key_init_pos();
       sig_key_init_pos = 1;
     }
   }
 
+  if (!prev_KCT && sig_KCT) {
+    ff_RUN = 1;
+  }
+
+  SIG(KST);
+  SIG(KSP);
+  SIG(KCT);
   SIG(KDP);
   SIG(KDN);
   SIG(KEX);

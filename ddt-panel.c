@@ -16,7 +16,7 @@ static void (*double_altmode_table[]) (void);
 #define NBKPT (8+1)
 #define NOBKPT (~0U)
 static int trace;
-static word_t breakpoints[NBKPT+1];
+static word_t breakpoints[NBKPT+2];
 static int prefix = -1;
 static int infix = -1;
 static int q = -1;
@@ -28,7 +28,6 @@ static int radix = 8;
 static int crlf;
 static int clear;
 static char ch;
-static word_t pc;
 static word_t starta = 0100;
 
 char *mnemonic[] ={
@@ -81,7 +80,7 @@ static void breakpoint(void)
 static void clear_breakpoints(void)
 {
   int i;
-  for (i = 0; i < NBKPT+1; i++)
+  for (i = 0; i < NBKPT+2; i++)
     breakpoints[i] = NOBKPT;
 }
 
@@ -257,7 +256,7 @@ static void control_g(void)
 
 static void stopped(char *x)
 {
-  fprintf(output, "%o%s", pc, x);
+  fprintf(output, "%o%s", PC, x);
   breakpoints[0] = NOBKPT;
   //XXXsymbolic(memory[pc]);
   crlf = 0;
@@ -309,19 +308,21 @@ static void oneproceed(void)
   fprintf(output, "\r\n");
   fflush(output);
   sig_SW_SGL_INST = 1;
-  proceed();
-  stopped(">>");
+  push(&sig_KCT);
   sig_SW_SGL_INST = 0;
+  stopped(">>");
 }
 
 static void next(void)
 {
   fprintf(output, "\r\n");
   fflush(output);
-  breakpoints[NBKPT] = pc + 1;
+  breakpoints[NBKPT] = PC + 1;
+  breakpoints[NBKPT+1] = PC + 2;
   proceed();
   stopped(">>");
   breakpoints[NBKPT] = NOBKPT;
+  breakpoints[NBKPT+1] = NOBKPT;
 }
 
 static void rubout(void)
@@ -433,7 +434,7 @@ static void period(void)
 
 static void altmode_period(void)
 {
-  prefix = pc;
+  prefix = PC;
   clear = 0;
 }
 
