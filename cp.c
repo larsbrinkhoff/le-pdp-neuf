@@ -114,10 +114,10 @@ unsigned ff_SAO;
 unsigned sig_KIOA3, sig_KIOA4, sig_KIOA5, sig_DASO, ff_RUN;
 unsigned INC_V_DCH, API_BK_RQ_B, PROG_SY, R12B;
 unsigned ff_AUT_INX, BK_SYNC, ff_BK, ODD_ADDR, sig_ADDR10;
-unsigned sig_KST, sig_KSP, sig_KCT, sig_KMT, sig_KIO, sig_KRI;
-unsigned sig_KDP, sig_KDN, sig_KEX, sig_KEN;
-unsigned sig_SW_SGL_INST, sig_SW_SGL_STP, sig_REPT;
-unsigned sig_KDPDN_RI, sig_KEY_KPDN;
+volatile unsigned sig_KST, sig_KSP, sig_KCT, sig_KMT, sig_KIO, sig_KRI;
+volatile unsigned sig_KDP, sig_KDN, sig_KEX, sig_KEN;
+volatile unsigned sig_SW_SGL_INST, sig_SW_SGL_STP, sig_REPT;
+volatile unsigned sig_KDPDN_RI, sig_KEY_KPDN;
 unsigned ff_UM;
 unsigned sig_NOSH, sig_SHL1, sig_SHL2, sig_SHR1, sig_SHR2;
 unsigned sig_deltaMB, ff_MEM_STROBE;
@@ -169,48 +169,51 @@ unsigned cp_clk(void)
   static unsigned prev_KST = 0, prev_KCT = 0;
   static unsigned prev_KEX = 0, prev_KEN = 0;
   static unsigned prev_KDP = 0, prev_KDN = 0;
+  static unsigned this_KST, this_KCT;
+  static unsigned this_KEX, this_KEN;
+  static unsigned this_KDP, this_KDN;
 
   if (!power)
     return 0;
 
-  VCD(KIOA3, sig_KIOA3 = sig_KST || sig_KMT || sig_KIO);
-  VCD(KIOA4, sig_KIOA4 = sig_KST || sig_KMT || sig_KEN || sig_KDN);
-  VCD(KIOA5, sig_KIOA5 = sig_KMT || sig_KEN || sig_KDN ||
-      sig_KEX || sig_KDP || sig_KIO);
+  VCD(KST, this_KST = sig_KST);
+  VCD(KSP, sig_KSP);
+  VCD(KCT, this_KCT = sig_KCT);
+  VCD(KDP, this_KDP = sig_KDP);
+  VCD(KDN, this_KDN = sig_KDN);
+  VCD(KEX, this_KEX = sig_KEX);
+  VCD(KEN, this_KEN = sig_KEN);
+  VCD(KRI, sig_KRI);
 
-  if ((!prev_KST && sig_KST) ||
-      (!prev_KEX && sig_KEX) ||
-      (!prev_KEN && sig_KEN) ||
-      (!prev_KDP && sig_KDP) ||
-      (!prev_KDN && sig_KDN)) {
+  VCD(KIOA3, sig_KIOA3 = this_KST || sig_KMT || sig_KIO);
+  VCD(KIOA4, sig_KIOA4 = this_KST || sig_KMT || this_KEN || this_KDN);
+  VCD(KIOA5, sig_KIOA5 = sig_KMT || this_KEN || this_KDN ||
+      this_KEX || this_KDP || sig_KIO);
+
+  if ((!prev_KST && this_KST) ||
+      (!prev_KEX && this_KEX) ||
+      (!prev_KEN && this_KEN) ||
+      (!prev_KDP && this_KDP) ||
+      (!prev_KDN && this_KDN)) {
     if (sig_KIOA3 || sig_KIOA4 || sig_KIOA5) {
       key_init_pos();
       sig_key_init_pos = 1;
     }
   }
 
-  if (!prev_KCT && sig_KCT) {
+  if (!prev_KCT && this_KCT) {
     ff_PCO = ff_PCOS;
     ff_ARO = ff_AROS;
     ff_RUN = 1;
     sig_key_init_pos = 1;
   }
 
-  SIG(KST);
-  SIG(KSP);
-  SIG(KCT);
-  SIG(KDP);
-  SIG(KDN);
-  SIG(KEX);
-  SIG(KEN);
-  SIG(KRI);
-
-  prev_KST = sig_KST;
-  prev_KCT = sig_KCT;
-  prev_KEX = sig_KEX;
-  prev_KEN = sig_KEN;
-  prev_KDP = sig_KDP;
-  prev_KDN = sig_KDN;
+  prev_KST = this_KST;
+  prev_KCT = this_KCT;
+  prev_KEX = this_KEX;
+  prev_KEN = this_KEN;
+  prev_KDP = this_KDP;
+  prev_KDN = this_KDN;
 
   return sig_key_init_pos;
 }
@@ -482,12 +485,12 @@ static void cm_strobe_c(void)
 
 static void zero_to_cma(void)
 {
-  ff_CMA &= 010;
+  VCD(CMA, ff_CMA &= 010);
 }
 
 static void thirteen_to_cma(void)
 {
-  ff_CMA |= 013;
+  VCD(CMA, ff_CMA |= 013);
 }
 
 static void cm_strobe_d(void)

@@ -8,10 +8,10 @@ typedef uint32_t word_t;
 extern long long nanoseconds;
 
 extern cm_t cm[];
-extern unsigned sig_KRI, sig_KIO, sig_KCT, sig_KSP, sig_KST;
-extern unsigned sig_KDP, sig_KEX, sig_KDN, sig_KEN;
+extern volatile unsigned sig_KRI, sig_KIO, sig_KCT, sig_KSP, sig_KST;
+extern volatile unsigned sig_KDP, sig_KEX, sig_KDN, sig_KEN;
+extern volatile unsigned sig_SW_SGL_INST, sig_SW_SGL_STP;
 extern unsigned sig_KIOA3, sig_KIOA4, sig_KIOA5;
-extern unsigned sig_SW_SGL_INST, sig_SW_SGL_STP;
 extern word_t MB, AC, AR, PC, MQ, IR, ADDR_SW, DATA_SW;
 extern unsigned ff_RUN, KIOA5;
 extern cm_t sig_CMSL, ff_CMA, ff_SM, ff_CONT, ff_MBI;

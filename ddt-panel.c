@@ -37,10 +37,10 @@ char *mnemonic[] ={
   "JMP", "JMP I", "EAE", "EAE", "IOT", "IOT", "OPR", "LAW"
 };
 
-static void push(unsigned *x)
+static void push(volatile unsigned *x)
 {
   *x = 1;
-  usleep(10000);
+  usleep(30000);
   *x = 0;
 }
 
@@ -169,14 +169,14 @@ static word_t examine(word_t addr)
 {
   ADDR_SW = dot = addr & 017777;
   push(&sig_KEX);
-  usleep(10000);
+  usleep(30000);
   return MB;
 }
 
 static word_t examine_next()
 {
   push(&sig_KEN);
-  usleep(10000);
+  usleep(30000);
   dot = MA;
   return MB;
 }
@@ -206,7 +206,6 @@ static void linefeed(void)
   fprintf(output, "\r\n%o/", prefix);
   fprintf(output, "   ");
   typeout(examine_next());
-  fprintf(output, "   ");
   crlf = 0;
 }
 
