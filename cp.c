@@ -107,7 +107,7 @@ cm_t ff_PCI;
 cm_t ff_MQI;
 cm_t ff_EXT;
 
-unsigned C, SEN, ff_PCOS, ff_ACOS, PV, LOT, sig_ISZ, ff_CAL, REP, IOT, OP;
+unsigned C, ff_SEN, ff_PCOS, ff_AROS, PV, LOT, sig_ISZ, ff_CAL, REP, IOT, OP;
 unsigned sig_CJIT_CAL_V_JMS, sig_CI17, sig_CO00;
 unsigned ff_SKIP;
 unsigned ff_SAO;
@@ -125,8 +125,6 @@ unsigned sig_deltaMB, ff_MEM_STROBE;
 static void pwr_clr_pos(void);
 static void key_init_pos(void);
 static void pk_clr(void);
-static void pco_restore(void);
-static void aco_restore(void);
 static void zero_to_cma(void);
 static void cm_clk(void);
 static void cm_current(void);
@@ -192,7 +190,10 @@ unsigned cp_clk(void)
   }
 
   if (!prev_KCT && sig_KCT) {
+    ff_PCO = ff_PCOS;
+    ff_ARO = ff_AROS;
     ff_RUN = 1;
+    sig_key_init_pos = 1;
   }
 
   SIG(KST);
@@ -354,7 +355,7 @@ static void ind_clk(void)
 static void pwr_clr_pos(void)
 {
   C = 0;
-  SEN = 0;
+  ff_SEN = 0;
   ind_clk();
   pk_clr();
   cm_strobe_a();
@@ -370,28 +371,8 @@ static void key_init_pos(void)
 
 static void sen(void)
 {
-  if (ff_PCO) {
-    ff_PCOS = 1;
-    if (sig_KCT) {
-      //...
-      pco_restore();
-    }
-  }
-  if (ff_ACO) {
-    ff_ACOS = 1;
-    if (sig_KCT) {
-      //...
-      aco_restore();
-    }
-  }
-}
-
-static void pco_restore(void)
-{
-}
-
-static void aco_restore(void)
-{
+  ff_PCOS = ff_PCO;
+  ff_AROS = ff_ARO;
 }
 
 static void pk_clr(void)
@@ -517,8 +498,10 @@ static void cm_strobe_d(void)
     ff_SKIP = (sig_ISZ && sig_ADRis0); //More inputs!
   FF(SKIP);
   ff_DONE = sig_CMSL & CM_DONE;
-  if (ff_DONE && (sig_KSP || sig_SW_SGL_INST))
+  if (ff_DONE && (sig_KSP || sig_SW_SGL_INST)) {
     VCD(RUN, ff_RUN = 0);
+    sen();
+  }
   VCD(CONT, ff_CONT = sig_CMSL & CM_CONT);
   ff_EAE_R = sig_CMSL & CM_EAE_R;
 

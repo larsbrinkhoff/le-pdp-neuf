@@ -90,5 +90,6 @@ extern unsigned cp_clk(void);
 extern void cm_clk_pos(void);
 extern void clr(void);
 extern void sync_clk(void);
+extern void mem_write(void);
 
 extern void ptr_mount(FILE *f);

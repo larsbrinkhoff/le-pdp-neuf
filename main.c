@@ -82,7 +82,7 @@ static void timing_chain(void)
   }
 
   nanoseconds += 135; //900
-  if (ff_CONT)
+  if (ff_CONT && ff_RUN)
     cm_clk_pos();
   nanoseconds += 10; //910
   VCD(CM_STROBE, 0);
