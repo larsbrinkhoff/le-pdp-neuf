@@ -102,6 +102,10 @@ int main(int argc, char **argv)
 VCD_VARIABLES
 #undef X
   vcd_start("dump.vcd", "PDP-9 simulator", "1ns");
+
+#define X(NAME, BITS) VCD(NAME, 0);
+VCD_VARIABLES
+#undef X
 #endif
 
   panel();
